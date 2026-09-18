@@ -56,17 +56,3 @@ def get_available_menu_items(
         .order_by(MenuItem.category, MenuItem.name)
         .all()
     )
-    query = (
-        db.query(MenuItem)
-        .filter(MenuItem.available.is_(True))
-    )
-
-    if category:
-        query = query.filter(
-    MenuItem.category.ilike(category)
-)
-    return (
-        query
-        .order_by(MenuItem.category, MenuItem.name)
-        .all()
-    )
