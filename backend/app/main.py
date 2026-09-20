@@ -19,7 +19,6 @@ from app.services.menu_item_service import (
 )
 from app.schemas.order import (
     OrderCreate,
-    StudentOrderCreate,
     OrderResponse,
     OrderDetailResponse,
     OrderStatusUpdate,
@@ -71,7 +70,12 @@ def create_user_endpoint(
             detail=str(e)
         )
 
-@app.post("/login")
+@app.post(
+    "/login",
+    responses={
+        401: {"description": "Invalid email or password"}
+    }
+)
 def login_endpoint(
     user: UserLogin,
     db: Session = Depends(get_db)
@@ -208,10 +212,12 @@ def get_my_orders_endpoint(
 @app.patch(
     "/orders/{order_id}/status",
     response_model=OrderResponse,
-    responses={
+   responses={
         400: {"description": "Invalid status transition"},
+        401: {"description": "Invalid or expired token"},
+        403: {"description": "Staff access required"},
         404: {"description": "Order not found"},
-    },
+},
 )
 def update_order_status_endpoint(
     order_id: int,

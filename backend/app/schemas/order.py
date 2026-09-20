@@ -14,9 +14,6 @@ class OrderStatus(str, Enum):
 class OrderCreate(BaseModel):
     menu_item_id: int
     quantity: int = Field(default=1, ge=1)
-class StudentOrderCreate(BaseModel):
-    menu_item_id: int
-    quantity: int = Field(default=1, ge=1)
 
 
 class OrderResponse(BaseModel):
