@@ -3,7 +3,20 @@ from sqlalchemy.orm import Session
 from app.models.order import Order
 from app.models.user import User
 from app.models.menu_item import MenuItem
-from app.schemas.order import OrderCreate
+from app.schemas.order import OrderCreate, OrderStatus
+
+
+def build_order_detail(order: Order):
+    return {
+        "id": order.id,
+        "user_id": order.user_id,
+        "user_name": order.user.name,
+        "menu_item_id": order.menu_item_id,
+        "menu_item_name": order.menu_item.name,
+        "quantity": order.quantity,
+        "status": OrderStatus(order.status),
+        "created_at": order.created_at,
+    }
 
 
 def create_order(db: Session, order: OrderCreate, user_id: int):
@@ -37,19 +50,9 @@ def get_orders(db: Session):
     orders = db.query(Order).order_by(Order.id.desc()).all()
 
     return [
-        {
-            "id": order.id,
-            "user_id": order.user_id,
-            "user_name": order.user.name,
-            "menu_item_id": order.menu_item_id,
-            "menu_item_name": order.menu_item.name,
-            "quantity": order.quantity,
-            "status": order.status,
-            "created_at": order.created_at
-        }
+        build_order_detail(order)
         for order in orders
     ]
-from app.schemas.order import OrderStatus
 
 
 def update_order_status(
@@ -84,24 +87,20 @@ def update_order_status(
     db.refresh(order)
 
     return order
+
+
 def get_order(db: Session, order_id: int, user_id: int):
     order = db.get(Order, order_id)
 
     if not order:
         raise ValueError("Order not found")
+
     if order.user_id != user_id:
         raise ValueError("Order not found")
 
-    return {
-        "id": order.id,
-        "user_id": order.user_id,
-        "user_name": order.user.name,
-        "menu_item_id": order.menu_item_id,
-        "menu_item_name": order.menu_item.name,
-        "quantity": order.quantity,
-        "status": OrderStatus(order.status),
-        "created_at": order.created_at,
-    }
+    return build_order_detail(order)
+
+
 def get_user_orders(db: Session, user_id: int):
     user = db.get(User, user_id)
 
@@ -116,15 +115,6 @@ def get_user_orders(db: Session, user_id: int):
     )
 
     return [
-        {
-            "id": order.id,
-            "user_id": order.user_id,
-            "user_name": order.user.name,
-            "menu_item_id": order.menu_item_id,
-            "menu_item_name": order.menu_item.name,
-            "quantity": order.quantity,
-            "status": OrderStatus(order.status),
-            "created_at": order.created_at,
-        }
+        build_order_detail(order)
         for order in orders
     ]
