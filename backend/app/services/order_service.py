@@ -46,8 +46,20 @@ def create_order(db: Session, order: OrderCreate, user_id: int):
     return new_order
 
 
-def get_orders(db: Session):
-    orders = db.query(Order).order_by(Order.id.desc()).all()
+def get_orders(
+    db: Session,
+    page: int,
+    limit: int
+):
+    offset = (page - 1) * limit
+
+    orders = (
+        db.query(Order)
+        .order_by(Order.id.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
     return [
         build_order_detail(order)

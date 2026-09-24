@@ -4,7 +4,7 @@ from app.database.connection import engine
 from app.models.user import User
 from app.models.menu_item import MenuItem
 from app.models.order import Order
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.schemas.user import UserCreate, UserLogin
 from app.services.user_service import create_user, login_user
@@ -150,10 +150,12 @@ def create_order_endpoint(
     
 @app.get("/orders", response_model=list[OrderDetailResponse])
 def get_orders_endpoint(
+    page: int = Query(1, ge=1),
+limit: int = Query(20, ge=1, le=100),
     staff = Depends(require_staff),
     db: Session = Depends(get_db)
 ):
-    return get_orders(db)
+    return get_orders(db, page, limit)
 @app.get(
     "/orders/{order_id}",
     response_model=OrderDetailResponse,
