@@ -22,6 +22,7 @@ from app.schemas.order import (
     OrderResponse,
     OrderDetailResponse,
     OrderStatusUpdate,
+    OrderPaginationResponse,
 )
 from app.services.order_service import (
     create_order,
@@ -148,7 +149,7 @@ def create_order_endpoint(
             detail=str(e)
         )
     
-@app.get("/orders", response_model=list[OrderDetailResponse])
+@app.get("/orders", response_model=OrderPaginationResponse)
 def get_orders_endpoint(
     page: int = Query(1, ge=1),
 limit: int = Query(20, ge=1, le=100),

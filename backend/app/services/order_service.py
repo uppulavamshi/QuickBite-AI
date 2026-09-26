@@ -53,6 +53,8 @@ def get_orders(
 ):
     offset = (page - 1) * limit
 
+    total = db.query(Order).count()
+
     orders = (
         db.query(Order)
         .order_by(Order.id.desc())
@@ -61,12 +63,18 @@ def get_orders(
         .all()
     )
 
-    return [
-        build_order_detail(order)
-        for order in orders
-    ]
+    total_pages = (total + limit - 1) // limit
 
-
+    return {
+        "items": [
+            build_order_detail(order)
+            for order in orders
+        ],
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "total_pages": total_pages,
+    }
 def update_order_status(
     db: Session,
     order_id: int,

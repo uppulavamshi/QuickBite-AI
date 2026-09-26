@@ -41,3 +41,9 @@ class OrderDetailResponse(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: OrderStatus
+class OrderPaginationResponse(BaseModel):
+    items: list[OrderDetailResponse]
+    page: int
+    limit: int
+    total: int
+    total_pages: int
